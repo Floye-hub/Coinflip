@@ -88,10 +88,12 @@ public class CoinFlipCommands {
         CompletableFuture<Boolean> future = CoinFlipMod.coinFlipManager.createFlip(player, amount, fullCurrencyKey);
         future.thenAccept(success -> {
             String msgKey = success ? "createSuccess" : "createFail";
+            double taxPercent = CoinFlipMod.config.getTaxPercentageForCurrency(currencyAlias);
             String message = CoinFlipMod.config.getMessage(msgKey, Map.of(
                     "amount", String.valueOf(amount),
                     "currency", currencyAlias,
-                    "max", String.valueOf(max)
+                    "max", String.valueOf(max),
+                    "tax", String.format("%.2f", taxPercent)
             ));
             player.sendMessage(Text.literal(message));
         });

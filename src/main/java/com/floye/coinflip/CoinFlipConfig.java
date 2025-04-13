@@ -21,7 +21,14 @@ public class CoinFlipConfig {
     // Paramètres généraux
     public String defaultCurrencyAlias = "dollars";
     public int maxCoinFlipsPerPlayer = 2;
-    public double taxPercentage = 5.0;
+    public int taxPercentage = 5;
+    public Map<String, Double> currencyTaxes = new HashMap<>() {{
+        put("dollars", 5.0); // Taxe par défaut pour "dollars"
+        put("credit", 10.0); // Taxe par défaut pour "credit"
+    }};
+    public double getTaxPercentageForCurrency(String currency) {
+        return currencyTaxes.getOrDefault(currency, (double) taxPercentage); // taxPercentage est la tax générale par défaut
+    }
     public int flipTimeoutMinutes = 5;
 
     // Configuration des devises
@@ -185,4 +192,6 @@ public class CoinFlipConfig {
         }
         return fullKey;
     }
+
+
 }

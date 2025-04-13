@@ -248,7 +248,9 @@ public class CoinFlipManager {
 
         // --- Paiement avec taxe ---
         double pot = flip.getAmount() * 2;
-        double taxPercent = CoinFlipMod.config.taxPercentage;
+        String currencyAlias = CoinFlipMod.config.getCurrencyAliasFromKey(flip.currency);
+
+        double taxPercent = CoinFlipMod.config.getTaxPercentageForCurrency(currencyAlias);
         double taxAmount = pot * (taxPercent / 100.0);
         double amountWon = pot - taxAmount;
 
