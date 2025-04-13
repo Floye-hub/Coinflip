@@ -139,6 +139,8 @@ public class CoinFlipManager {
                                 }
                             }, CoinFlipMod.config.flipTimeoutMinutes, TimeUnit.MINUTES);
 
+                            CoinFlipMod.LOGGER.info("creation coinflip");
+
                             broadcastFlipCreation(creator, newFlip);
                             saveFlips();
                             return true;
@@ -149,8 +151,11 @@ public class CoinFlipManager {
     }
 
     private void broadcastFlipCreation(ServerPlayerEntity creator, CoinFlip flip) {
+        CoinFlipMod.LOGGER.info("Début de broadcastFlipCreation");
         String playerName = creator.getName().getString();
-        String amountString = String.format("%.2f", flip.amount);
+        CoinFlipMod.LOGGER.info("1");
+        String amountString = String.format("%.2f",(double)flip.amount);
+        CoinFlipMod.LOGGER.info("2");
         String currencyAlias = CoinFlipMod.config.getCurrencyAliasFromKey(flip.currency);
 
         String message = CoinFlipMod.config.getMessage("broadcastFlipCreation", Map.of(
@@ -158,12 +163,17 @@ public class CoinFlipManager {
                 "amount", amountString,
                 "currency", currencyAlias
         ));
+        CoinFlipMod.LOGGER.info("Message généré: {}", message);
 
         MinecraftServer server = creator.getServer();
+        CoinFlipMod.LOGGER.info("Serveur: {}", server);
         if (server != null) {
+            CoinFlipMod.LOGGER.info("Envoi du message à tous les joueurs");
             server.getPlayerManager().getPlayerList().forEach(player -> {
                 player.sendMessage(Text.literal(message));
             });
+        } else {
+            CoinFlipMod.LOGGER.info("Le serveur est null, impossible d'envoyer le message");
         }
     }
 

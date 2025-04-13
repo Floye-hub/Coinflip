@@ -109,7 +109,9 @@ public class CoinFlipAnimationGui extends SimpleGui {
         }
 
         double pot = flip.getAmount() * 2;
-        double taxPercent = CoinFlipMod.config.taxPercentage;
+        String currencyAlias = CoinFlipMod.config.getCurrencyAliasFromKey(flip.currency);
+
+        double taxPercent = CoinFlipMod.config.getTaxPercentageForCurrency(currencyAlias);
         double taxAmount = pot * (taxPercent / 100.0);
         double winnerAmount = pot - taxAmount;
 
