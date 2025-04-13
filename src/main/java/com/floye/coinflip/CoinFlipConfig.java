@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.util.Identifier;
 
 public class CoinFlipConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -55,6 +58,19 @@ public class CoinFlipConfig {
         // Display options
         public boolean showPlayerHeads = true;
         public int itemsPerPage = 50;
+
+        // Sons
+        public String flipSound = "minecraft:block.note_block.pling";
+        public float flipSoundVolume = 0.5f;
+        public float flipSoundPitch = 1.0f;
+
+        public String winSound = "minecraft:entity.player.levelup";
+        public float winSoundVolume = 1.0f;
+        public float winSoundPitch = 1.0f;
+
+        public String loseSound = "minecraft:entity.villager.no";
+        public float loseSoundVolume = 1.0f;
+        public float loseSoundPitch = 0.8f;
     }
 
     public static class Messages {
@@ -84,7 +100,6 @@ public class CoinFlipConfig {
         public String flipTimeout = "§cYour CoinFlip was canceled after %minutes% minutes without a participant";
         public String broadcastFlipCreation = "§6A new CoinFlip has been created by %player% for %amount% %currency%!";
     }
-
 
     public static CoinFlipConfig load() {
         try {

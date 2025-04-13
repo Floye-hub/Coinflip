@@ -7,8 +7,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -25,7 +28,7 @@ public class CoinFlipAnimationGui extends SimpleGui {
 
     public CoinFlipAnimationGui(ServerPlayerEntity player, CoinFlipManager.CoinFlip flip, boolean isWinner) {
         super(ScreenHandlerType.GENERIC_9X3, player, false);
-        CoinFlipMod.LOGGER.info("CoinFlipAnimationGui CONSTRUCTEUR DÉMARRÉ pour joueur {}", player.getName().getString()); // Log au début du constructeur
+        CoinFlipMod.LOGGER.info("CoinFlipAnimationGui CONSTRUCTEUR DÉMARRÉ pour joueur {}", player.getName().getString());
         this.player = player;
         this.flip = flip;
         this.isWinner = isWinner;
@@ -36,7 +39,7 @@ public class CoinFlipAnimationGui extends SimpleGui {
                 .formatted(CoinFlipMod.config.getColorFormatting(CoinFlipMod.config.gui.primaryColor)));
         initializeGui();
         this.open();
-        CoinFlipMod.LOGGER.info("CoinFlipAnimationGui CONSTRUCTEUR FINI et initializeGui() terminé pour joueur {}", player.getName().getString()); // Log à la fin du constructeur
+        CoinFlipMod.LOGGER.info("CoinFlipAnimationGui CONSTRUCTEUR FINI et initializeGui() terminé pour joueur {}", player.getName().getString());
     }
 
     private void initializeGui() {
@@ -66,6 +69,21 @@ public class CoinFlipAnimationGui extends SimpleGui {
         // Vider tous les slots
         for (int i = 0; i < this.getSize(); i++) {
             this.clearSlot(i);
+        }
+
+        // Jouer le son de flip
+        if (isAnimationRunning) {
+            Identifier soundId = Identifier.of(CoinFlipMod.config.gui.flipSound);
+            SoundEvent soundEvent = SoundEvent.of(soundId);
+            player.getWorld().playSound(
+                    null,
+                    player.getBlockPos(),
+                    soundEvent,
+                    SoundCategory.PLAYERS,
+                    CoinFlipMod.config.gui.flipSoundVolume,
+                    CoinFlipMod.config.gui.flipSoundPitch
+            );
+
         }
 
         // Choix couleurs alternées
@@ -113,6 +131,23 @@ public class CoinFlipAnimationGui extends SimpleGui {
                     CoinFlipMod.config.getCurrencyAliasFromKey(flip.currency));
         }
 
+        // Jouer le son de victoire/défaite
+        String soundKey = isWinner ? CoinFlipMod.config.gui.winSound : CoinFlipMod.config.gui.loseSound;
+        float volume = isWinner ? CoinFlipMod.config.gui.winSoundVolume : CoinFlipMod.config.gui.loseSoundVolume;
+        float pitch = isWinner ? CoinFlipMod.config.gui.winSoundPitch : CoinFlipMod.config.gui.loseSoundPitch;
+
+        Identifier soundId = Identifier.of(soundKey);
+        SoundEvent soundEvent = SoundEvent.of(soundId);
+        player.getWorld().playSound(
+                null,
+                player.getBlockPos(),
+                soundEvent,
+                SoundCategory.PLAYERS,
+                CoinFlipMod.config.gui.flipSoundVolume,
+                CoinFlipMod.config.gui.flipSoundPitch
+        );
+
+
         // Couleurs en fonction du résultat
         Item glassColor = isWinner ? Items.LIME_STAINED_GLASS_PANE : Items.RED_STAINED_GLASS_PANE;
         Item woolColor = isWinner ? Items.LIME_WOOL : Items.RED_WOOL;
@@ -142,14 +177,9 @@ public class CoinFlipAnimationGui extends SimpleGui {
 
         if (executor != null && !executor.isShutdown()) {
             executor.shutdown();
-
         }
         if (!player.isRemoved()) {
             CoinFlipMod.coinFlipManager.removeActiveAnimation(player.getUuid());
-
-        } else {
-
         }
-
     }
 }
